@@ -1,0 +1,31 @@
+{
+    "name": "auburnite/melketa",
+    "type": "library",
+    "description": "a sqlsrv doctrine dbal wrapper, this is to create a DAL(Data Access Layer) over the DBAL before the ORM.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jordan Wamser",
+            "email": "jwamser@redpandacoding.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {},
+    "conflict": {},
+    "autoload": {
+        "psr-4": {
+            "Auburnite\\Component\\Malketa\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        }
+    },
+    "minimum-stability": "dev"
+}
