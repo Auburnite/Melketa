@@ -1,0 +1,107 @@
+#!/usr/bin/env php
+<?php
+/*******************************************************************************
+ * Auburnite
+ *
+ * @link                https://github.com/Auburnite/Auburnite
+ * @copywrite           Copywrite (c) 2023-present | Jordan Wamser - RedPanda Coding
+ * @license             https://github.com/Auburnite/Auburnite/blob/main/LICENSE
+ ******************************************************************************/
+namespace Auburnite\Component\Malketa;
+
+use Auburnite\Component\Malketa\Command\UserDefinedTypeLoaderCommand;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\DriverManager;
+use Symfony\Bundle\MakerBundle\Generator;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Filesystem\Filesystem;
+
+require $_composer_autoload_path ?? __DIR__ . '/vendor/autoload.php';
+
+//Initialize container builder
+$containerBuilder = new ContainerBuilder();
+
+//load locale config and bundle configs
+// This array is like the Bundles file in a Full Framework setup
+// TODO:
+// Current will only work if the project is ran as a itself. if this lib is required in this will not work
+$composerFileLoader = new FileLocator([
+        __DIR__.'/vendor/'
+]);
+$xmlLoader = new XmlFileLoader($containerBuilder,$composerFileLoader);
+
+//Load Maker Bundle
+$xmlLoader->load('symfony/maker-bundle/src/Resources/config/services.xml');
+
+//Load self Project Services
+$containerBuilder->register('filesystem',Filesystem::class);
+$containerBuilder->setParameter('kernel.project_dir',__DIR__);
+$containerBuilder->setParameter('twig.default_path',null);
+
+//Load in the config.php for secure data loading
+if (file_exists(__DIR__.'/config.php')) {
+    $contents = require __DIR__.'/config.php';
+    foreach ($contents as $configType => $values) {
+        if ($configType === 'connections') {
+            // Make Sure we have DBAL
+            if (!class_exists(DriverManager::class)) {
+                throw new \Exception('MISSING DOCTRINE DBAL');
+                continue;
+            }
+
+            // Autowire Doctrine Connections
+            foreach ($values as $connectionName => $params) {
+                $containerBuilder->register(sprintf(
+                    'malketa.dbal_connections.%s',
+                    $connectionName
+                ),Connection::class)
+                    ->setFactory(
+                            [
+                                    DriverManager::class,
+                                'getConnection'
+                            ]
+                    )
+                    ->addArgument($params)
+                ;
+            }
+
+            //DriverManager::getConnection($params)
+        }
+    }
+}
+
+if (!$containerBuilder->hasDefinition('malketa.dbal_connections.main')) {
+    throw new \Exception('You don\'t have a MAIN dbal connection setup. Please make sure you have created a config.php file.');
+}
+
+$containerBuilder->register(UserDefinedTypeManager::class,UserDefinedTypeManager::class)
+    ->addArgument(new Reference('malketa.dbal_connections.main'));
+
+//Commands
+$containerBuilder->register(UserDefinedTypeLoaderCommand::class,UserDefinedTypeLoaderCommand::class)
+    ->addArgument(new Reference('maker.generator'))
+    ->addArgument(new Reference(UserDefinedTypeManager::class))
+//    ->addTag('console.command')
+    ->setPublic(true)
+;
+
+// Application
+$containerBuilder->register('malketa.app',Application::class)
+//    ->addMethodCall('setSubscribedCommands',[new TaggedIteratorArgument('console.command')])
+    ->setPublic(true)
+    ->addArgument('Malketa CLI')
+    ->addArgument('1.0.0')
+;
+
+$containerBuilder->compile();
+
+$melketa = $containerBuilder->get('malketa.app');
+$melketa->add($containerBuilder->get(UserDefinedTypeLoaderCommand::class));
+
+$melketa->run();

@@ -9,12 +9,27 @@
             "email": "jwamser@redpandacoding.com"
         }
     ],
-    "require": {
-        "php": ">=8.2",
-        "doctrine/dbal": "^3.7",
-        "ext-pdo": "*"
+    "suggest": {
+        "ext-sqlsrv": "Allows connecting to Microsoft SQL Server databases directly.",
+        "ext-pdo_sqlsrv": "Allows PDO-based connections to Microsoft SQL Server databases."
     },
-    "conflict": {},
+    "require": {
+        "php": ">=8.1",
+        "doctrine/dbal": "^3.7",
+        "ext-pdo": "*",
+        "symfony/console": "^6.4|^7.0",
+        "ext-readline": "*",
+        "symfony/dependency-injection": "^6.4|^7.0",
+        "ext-sqlsrv": "*",
+        "ext-pdo_sqlsrv": "*"
+    },
+    "conflict": {
+        "doctrine/doctrine-bundle": "<2.6",
+        "doctrine/dbal": "<3.2"
+    },
+    "config": {
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "Auburnite\\Component\\Malketa\\": ""
@@ -23,11 +38,21 @@
             "/Tests/"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Auburnite\\Component\\Malketa\\Tests\\": "Tests/"
+        }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "0.1-dev"
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "symfony/var-dumper": "^7.0",
+        "phpunit/phpunit": "^10.5",
+        "symfony/maker-bundle": "^1.54"
+    }
 }
