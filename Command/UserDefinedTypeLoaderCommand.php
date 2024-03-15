@@ -1,19 +1,19 @@
 <?php
 
-/*******************************************************************************
- * Auburnite
+/*
+ * This file is part of the Auburnite package.
  *
- * @link                https://github.com/Auburnite/Auburnite
- * @copywrite           Copywrite (c) 2023-present | Jordan Wamser - RedPanda Coding
- * @license             https://github.com/Auburnite/Auburnite/blob/main/LICENSE
- ******************************************************************************/
+ * (c) Jordan Wamser <jwamser@redpandacoding.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Auburnite\Component\Malketa\Command;
 
 use Auburnite\Component\Malketa\Generator\ColumnOptionConfigGenerator;
 use Auburnite\Component\Malketa\Models\SchemaUserDefinedType;
 use Auburnite\Component\Malketa\UserDefinedTypeManager;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
@@ -26,16 +26,16 @@ use Symfony\Component\Console\Terminal;
 
 class UserDefinedTypeLoaderCommand extends Command
 {
-//    private UserDefinedTypeManager $definedTypeManager;
+    //    private UserDefinedTypeManager $definedTypeManager;
     private array $consoleMessages;
     private OutputInterface $output;
 
     public function __construct(
         private Generator $generator,
-        private UserDefinedTypeManager $definedTypeManager
-    ){
-        //Database configuration
-//        $this->definedTypeManager = new UserDefinedTypeManager($connection);
+        private UserDefinedTypeManager $definedTypeManager,
+    ) {
+        // Database configuration
+        //        $this->definedTypeManager = new UserDefinedTypeManager($connection);
 
         parent::__construct(self::getDefaultName());
     }
@@ -58,17 +58,17 @@ class UserDefinedTypeLoaderCommand extends Command
             ->setStyle('trail', $style);
         $this->output = $output;
 
-//        // Define a custom style with blinking
-//        $blinkingStyle = new OutputFormatterStyle('green', 'black', ['options' => ['blink']]);
-//        $output->getFormatter()->setStyle('blink', $blinkingStyle);
+        //        // Define a custom style with blinking
+        //        $blinkingStyle = new OutputFormatterStyle('green', 'black', ['options' => ['blink']]);
+        //        $output->getFormatter()->setStyle('blink', $blinkingStyle);
 
         $terminal = new Terminal();
         $width = $terminal->getWidth();
         $height = $terminal->getHeight();
 
-//        $message = 'Hello, Symfony Terminal!';
-//        $x = ($width - strlen($message)) / 2;
-//        $y = $height / 2;
+        //        $message = 'Hello, Symfony Terminal!';
+        //        $x = ($width - strlen($message)) / 2;
+        //        $y = $height / 2;
 
         // Display an ASCII art title
         $title = <<<ASCII
@@ -84,12 +84,12 @@ class UserDefinedTypeLoaderCommand extends Command
                               ▀           ▀                                             .
 ASCII;
 
-//        $output->writeln("<trail>$title</trail>");
+        //        $output->writeln("<trail>$title</trail>");
 
-//        $output->write(sprintf("\033[%d;%dH%s", $y, $x, "<trail>$title</trail>"));
+        //        $output->write(sprintf("\033[%d;%dH%s", $y, $x, "<trail>$title</trail>"));
         // Clear the screen
         $this->output->write("\033[2J\033[H");
-        $this->output->writeln(sprintf("%s", "<trail>$title</trail>"));
+        $this->output->writeln(sprintf('%s', "<trail>$title</trail>"));
 
         // Wait for user input
         $init = true;
@@ -110,14 +110,14 @@ ASCII;
 
             $actionInput = readline("Type ':q' to quit: ");
 
-            if ($actionInput === ':g') {
+            if (':g' === $actionInput) {
                 $this->output->write("\033[2J\033[H");
 
                 $types = $this->loadDbalUserDefinedTypes();
 
                 $this->output->write("\033[2J\033[H");
                 $this->output->writeln('<trail>Loading... Preparing File Generation</trail>');
-                $sy = new SymfonyStyle($input,$this->output);
+                $sy = new SymfonyStyle($input, $this->output);
                 $progress = $sy->createProgressBar(count($types));
                 $progress->display();
                 foreach ($types as $key => $type) {
@@ -142,7 +142,7 @@ ASCII;
                             'use_statemnts' => $useStatments,
                             'base_class_name' => $shortName,
                             'column_settings' => new ColumnOptionConfigGenerator(
-                                new SchemaUserDefinedType((array)$type),
+                                new SchemaUserDefinedType((array) $type),
                                 $typeMEtadata[4]
                             ),
                             'name' => $typeMEtadata[1],
@@ -159,8 +159,8 @@ ASCII;
                 $clear = false;
             }
 
-            if ($actionInput === ':m') {
-                $sy = new SymfonyStyle($input,$this->output);
+            if (':m' === $actionInput) {
+                $sy = new SymfonyStyle($input, $this->output);
                 $table = $sy->createTable();
                 $table->setHeaders([
                     'Supported',
@@ -179,7 +179,7 @@ ASCII;
 
                 $clear = false;
             }
-        } while ($actionInput !== ':q');
+        } while (':q' !== $actionInput);
 
         // Clear the screen
         if ($clear) {
@@ -192,9 +192,9 @@ ASCII;
 
     private function loadTypesMetadata(): array
     {
-        return array_map(function(SchemaUserDefinedType|\stdClass $type): array {
+        return array_map(function (SchemaUserDefinedType|\stdClass $type): array {
             return $this->createTypeMetadata($type);
-        },$this->loadDbalUserDefinedTypes());
+        }, $this->loadDbalUserDefinedTypes());
     }
 
     private function loadDbalUserDefinedTypes(): array
@@ -207,7 +207,7 @@ ASCII;
             $results = $this->definedTypeManager->fetchAliasTypes();
             $this->output->write("\033[2J\033[H");
             $this->output->writeln('<trail>LOADING... Types to Array</trail>');
-            $types = array_map(function($row): SchemaUserDefinedType {
+            $types = array_map(function ($row): SchemaUserDefinedType {
                 $type = new SchemaUserDefinedType($row);
                 $type->setSupport(
                     $this->definedTypeManager->getDatabasePlatform()->hasDoctrineTypeMappingFor(
@@ -216,11 +216,11 @@ ASCII;
                 );
 
                 return $type;
-            },$results);
+            }, $results);
 
             // Encode the array into JSON format
             $jsonData = json_encode([
-                'types'=>$types
+                'types' => $types,
             ]);
 
             $this->output->write("\033[2J\033[H");
@@ -228,11 +228,10 @@ ASCII;
             // Save the JSON data to a file
             file_put_contents($filePath, $jsonData);
             $this->consoleMessages[] = sprintf(
-                "JSON data has been saved to `%s`",
+                'JSON data has been saved to `%s`',
                 $filePath
             );
         }
-
 
         $this->output->write("\033[2J\033[H");
         $this->output->writeln('<trail>LOADING... From Cache</trail>');
@@ -242,19 +241,19 @@ ASCII;
         // Decoding the JSON string into an object
         $this->output->write("\033[2J\033[H");
         $this->output->writeln('<trail>LOADING...Encoding Cache</trail>');
-        $types = (json_decode($jsonString))->types;
+        $types = json_decode($jsonString)->types;
 
-        $this->consoleMessages[] = "Total Types Found: ".count($types);
-
+        $this->consoleMessages[] = 'Total Types Found: '.count($types);
 
         $this->output->write("\033[2J\033[H");
+
         return $types;
     }
 
     private function createTypeMetadata(SchemaUserDefinedType|\stdClass $type)
     {
         if ($type instanceof \stdClass) {
-            $type = new SchemaUserDefinedType((array)$type);
+            $type = new SchemaUserDefinedType((array) $type);
         }
 
         return [

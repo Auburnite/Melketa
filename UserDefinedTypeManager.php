@@ -1,12 +1,14 @@
 <?php
 
-/*******************************************************************************
- * Auburnite
+/*
+ * This file is part of the Auburnite package.
  *
- * @link                https://github.com/Auburnite/Auburnite
- * @copywrite           Copywrite (c) 2023-present | Jordan Wamser - RedPanda Coding
- * @license             https://github.com/Auburnite/Auburnite/blob/main/LICENSE
- ******************************************************************************/
+ * (c) Jordan Wamser <jwamser@redpandacoding.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Auburnite\Component\Malketa;
 
 use Auburnite\Component\Malketa\Models\SchemaUserDefinedType;
@@ -15,23 +17,23 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * Again this library is only for MSSQL, we will want to add some validation around this
+ * Again this library is only for MSSQL, we will want to add some validation around this.
  */
 class UserDefinedTypeManager
 {
-
     public function __construct(
-        private Connection $connection
-    ){
+        private Connection $connection,
+    ) {
     }
 
     /**
      * @note Any types starting with "n" (nvarchar,nchar,etc) divide this by 2
+     *
      * @throws Exception
      */
     public function fetchAliasTypes(): array
     {
-        $sql = "SELECT
+        $sql = 'SELECT
     u.name AS UserDefinedTypeName,
     u.user_type_id AS UserDefinedUserTypeId,
     SCHEMA_NAME(u.schema_id) AS SchemaName,
@@ -49,7 +51,7 @@ WHERE
     u.is_user_defined = 1 and u.user_type_id > 256
 ORDER BY
     SchemaName,
-    UserDefinedTypeName";
+    UserDefinedTypeName';
 
         $result = $this->connection->executeQuery($sql);
 
@@ -68,7 +70,6 @@ ORDER BY
      * @note SmallIntType, IntegerType, BigIntType, GuidType, BlobType, TextType, BooleanType: These types primarily consider nullable since their size or precision is not typically specified beyond the type itself in SQL Server.
      * @note FloatType: While precision is available, its interpretation differs between databases. For SQL Server, it represents the number of bits used to store the mantissa of the float and affects the precision of the number. It also includes nullable.
      * @note DateTimeType: Can specify precision for the fractional seconds precision and nullable.
-     *
      * @note \Doctrine\DBAL\Types\FloatType SQL Server treats 'precision' differently for floats.
      * @note \Doctrine\DBAL\Types\DateTimeType 'precision' for fractional seconds
      * @note \Doctrine\DBAL\Types\BlobType Typically large objects without a fixed size

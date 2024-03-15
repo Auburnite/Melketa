@@ -1,12 +1,14 @@
 <?php
 
-/*******************************************************************************
- * Auburnite
+/*
+ * This file is part of the Auburnite package.
  *
- * @link                https://github.com/Auburnite/Auburnite
- * @copywrite           Copywrite (c) 2023-present | Jordan Wamser - RedPanda Coding
- * @license             https://github.com/Auburnite/Auburnite/blob/main/LICENSE
- ******************************************************************************/
+ * (c) Jordan Wamser <jwamser@redpandacoding.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Auburnite\Component\Malketa\src\Auburnite\Component\Melketa\Maker;
 
 use Doctrine\DBAL\Types\Type;
@@ -46,11 +48,10 @@ class AliasTypeMaker extends AbstractMaker
                 'Base Class name of the DBAL Type to create or update (e.g. <fg=yellow>%s</>)',
                 Type::class
             ))
-            ->addOption('namespace', null,null, sprintf(
+            ->addOption('namespace', null, null, sprintf(
                 'The namespace prefix to create the class in (e.g. <fg=yellow>%s</>)',
                 'Doctrine\\Types\\'
-            ),'Doctrine\\Types\\')
-
+            ), 'Doctrine\\Types\\')
 
 //            ->setHelp(file_get_contents(__DIR__.'/../Resources/help/MakeCommand.txt'))
         ;
@@ -80,6 +81,7 @@ class AliasTypeMaker extends AbstractMaker
             $io->text([
                 'Your Type class already exists! We will have to rebuild. [FEATURE: Not Ready Yet, Sorry]',
             ]);
+
             return;
         }
 

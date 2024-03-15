@@ -1,12 +1,14 @@
 <?php
 
-/*******************************************************************************
- * Auburnite
+/*
+ * This file is part of the Auburnite package.
  *
- * @link                https://github.com/Auburnite/Auburnite
- * @copywrite           Copywrite (c) 2023-present | Jordan Wamser - RedPanda Coding
- * @license             https://github.com/Auburnite/Auburnite/blob/main/LICENSE
- ******************************************************************************/
+ * (c) Jordan Wamser <jwamser@redpandacoding.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Auburnite\Component\Malketa\Models;
 
 class SchemaUserDefinedType extends ValueObject
@@ -29,34 +31,42 @@ class SchemaUserDefinedType extends ValueObject
     {
         return $this->getDataValue('UserDefinedTypeName');
     }
+
     public function getUserDefinedUserTypeId()
     {
         return $this->getDataValue('UserDefinedUserTypeId');
     }
+
     public function getSchemaName()
     {
         return $this->getDataValue('SchemaName');
     }
+
     public function getUserDefinedMaxLength()
     {
         return $this->getDataValue('UserDefinedMaxLength');
     }
+
     public function getUserDefinedPrecision()
     {
         return $this->getDataValue('UserDefinedPrecision');
     }
+
     public function getUserDefinedScale()
     {
         return $this->getDataValue('UserDefinedScale');
     }
+
     public function isNullable()
     {
         return $this->getDataValue('IsNullable');
     }
+
     public function getBaseSystemTypeName()
     {
         return $this->getDataValue('BaseSystemTypeName');
     }
+
     public function getBaseSystemTypeId()
     {
         return $this->getDataValue('BaseSystemTypeId');
@@ -71,6 +81,4 @@ class SchemaUserDefinedType extends ValueObject
             ]
         );
     }
-
-
 }
